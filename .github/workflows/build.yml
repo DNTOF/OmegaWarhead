@@ -27,26 +27,30 @@ jobs:
       - name: Restore SNK from secret
         shell: pwsh
         env:
-          SNK_BASE64: ${{ secrets.SNK_BASE64 }}
+          SNK_HEX: ${{ secrets.SNK_HEX }}
         run: |
-          if (-not [string]::IsNullOrEmpty($env:SNK_BASE64)) {
-            Write-Host "Decoding SNK key from secret..."
-            # Trim whitespace and newlines that may have been accidentally included when pasting
-            $clean = $env:SNK_BASE64 -replace '\s+', ''
-            try {
-              [System.Convert]::FromBase64String($clean) | Set-Content -Path OmegaWarhead.snk -Encoding Byte
-              Write-Host "SNK key restored. File size: $((Get-Item OmegaWarhead.snk).Length) bytes"
-            } catch {
-              Write-Error "Failed to decode SNK_BASE64: $($_.Exception.Message)"
-              Write-Host "Secret length: $($env:SNK_BASE64.Length) chars, after trim: $($clean.Length) chars"
-              exit 1
-            }
-          } else {
-            Write-Warning "SNK_BASE64 secret not set — generating a temporary key for build test only."
+          $ErrorActionPreference = 'Stop'
+          $hex = $env:SNK_HEX
+          if ([string]::IsNullOrEmpty($hex)) {
+            Write-Warning "SNK_HEX secret not set — generating a temporary key for build test only."
             $snExe = "${env:ProgramFiles(x86)}\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\sn.exe"
             if (Test-Path $snExe) {
               & $snExe -k OmegaWarhead.snk
             }
+          } else {
+            Write-Host "Decoding SNK key from hex secret..."
+            # Hex string → byte array (pure 0-9A-F, no special chars, no base64 ambiguity)
+            $hex = $hex -replace '\s+', ''
+            if ($hex.Length % 2 -ne 0) {
+              Write-Error "SNK_HEX has odd length — check the secret for copy/paste errors."
+              exit 1
+            }
+            $bytes = [byte[]]::new($hex.Length / 2)
+            for ($i = 0; $i -lt $bytes.Length; $i++) {
+              $bytes[$i] = [Convert]::ToByte($hex.Substring($i * 2, 2), 16)
+            }
+            [System.IO.File]::WriteAllBytes('OmegaWarhead.snk', $bytes)
+            Write-Host "SNK key restored successfully."
           }
 
       - name: Setup .NET
