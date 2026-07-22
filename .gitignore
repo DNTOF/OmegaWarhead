@@ -1,0 +1,30 @@
+# Build artifacts
+bin/
+obj/
+*.user
+*.suo
+*.cache
+
+# IDE / Editor
+.vs/
+.vscode/
+.idea/
+*.swp
+*.sln.DotSettings.user
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ZCode plan folder — do not upload
+.zcode/
+
+# Strong name key — private, do NOT commit
+OmegaWarhead.snk
+*.snk
+
+# Compiled output (but NOT the lib/ reference DLLs needed for CI)
+*.dll
+!lib/*.dll
+*.pdb
+!lib/*.pdb
