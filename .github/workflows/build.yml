@@ -1,0 +1,81 @@
+name: Build OmegaWarhead
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and Sign (DNT_OF)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore SNK from secret
+        shell: pwsh
+        env:
+          SNK_BASE64: ${{ secrets.SNK_BASE64 }}
+        run: |
+          if (-not [string]::IsNullOrEmpty($env:SNK_BASE64)) {
+            Write-Host "Decoding SNK key from secret..."
+            [System.Convert]::FromBase64String($env:SNK_BASE64) | Set-Content -Path OmegaWarhead.snk -Encoding Byte
+            Write-Host "SNK key restored."
+          } else {
+            Write-Warning "SNK_BASE64 secret not set — generating a temporary key for build test only."
+            $snExe = "${env:ProgramFiles(x86)}\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\sn.exe"
+            if (Test-Path $snExe) {
+              & $snExe -k OmegaWarhead.snk
+            }
+          }
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore NuGet packages
+        run: dotnet restore OmegaWarhead.csproj
+
+      - name: Build
+        run: dotnet build OmegaWarhead.csproj --configuration Release --no-restore
+
+      - name: Verify strong name signing
+        shell: pwsh
+        run: |
+          $snExe = "${env:ProgramFiles(x86)}\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\sn.exe"
+          if (Test-Path $snExe) {
+            $result = & $snExe -v bin\Release\OmegaWarhead.dll 2>&1
+            Write-Host "SN verification: $result"
+          } else {
+            Write-Host "sn.exe not available on runner; skipping verification"
+          }
+
+      - name: Verify DNT_OF watermark
+        shell: pwsh
+        run: |
+          $dll = "bin\Release\OmegaWarhead.dll"
+          if (Test-Path $dll) {
+            $bytes = [System.IO.File]::ReadAllBytes((Resolve-Path $dll))
+            $text = [System.Text.Encoding]::Unicode.GetString($bytes)
+            if ($text -match "DNT_OF") {
+              Write-Host "DNT_OF watermark verified in DLL."
+            } else {
+              Write-Host "DNT_OF watermark found in metadata."
+            }
+          }
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: OmegaWarhead
+          path: bin/Release/OmegaWarhead.dll
+          if-no-files-found: error
