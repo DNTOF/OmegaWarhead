@@ -31,8 +31,16 @@ jobs:
         run: |
           if (-not [string]::IsNullOrEmpty($env:SNK_BASE64)) {
             Write-Host "Decoding SNK key from secret..."
-            [System.Convert]::FromBase64String($env:SNK_BASE64) | Set-Content -Path OmegaWarhead.snk -Encoding Byte
-            Write-Host "SNK key restored."
+            # Trim whitespace and newlines that may have been accidentally included when pasting
+            $clean = $env:SNK_BASE64 -replace '\s+', ''
+            try {
+              [System.Convert]::FromBase64String($clean) | Set-Content -Path OmegaWarhead.snk -Encoding Byte
+              Write-Host "SNK key restored. File size: $((Get-Item OmegaWarhead.snk).Length) bytes"
+            } catch {
+              Write-Error "Failed to decode SNK_BASE64: $($_.Exception.Message)"
+              Write-Host "Secret length: $($env:SNK_BASE64.Length) chars, after trim: $($clean.Length) chars"
+              exit 1
+            }
           } else {
             Write-Warning "SNK_BASE64 secret not set — generating a temporary key for build test only."
             $snExe = "${env:ProgramFiles(x86)}\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\sn.exe"
