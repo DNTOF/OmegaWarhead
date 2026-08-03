@@ -39,7 +39,7 @@ namespace OmegaWarhead
 
         public override string Name => "OmegaWarhead";
 
-        public override string Author => "OmegaWarhead Project";
+        public override string Author => "DNT_OF";
 
         public override Version Version => new Version(1, 0, 0);
 
