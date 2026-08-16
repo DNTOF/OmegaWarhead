@@ -1,0 +1,75 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <AssemblyName>OmegaWarhead</AssemblyName>
+    <RootNamespace>OmegaWarhead</RootNamespace>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>bin\Release\</OutputPath>
+    <!-- Strong Name Signing -->
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>OmegaWarhead.snk</AssemblyOriginatorKeyFile>
+    <!-- DNT_OF metadata -->
+    <Company>DNT_OF</Company>
+    <Authors>DNT_OF</Authors>
+    <Product>OmegaWarhead</Product>
+    <Copyright>Copyright © 2026 DNT_OF. All rights reserved.</Copyright>
+    <Description>OMEGA Warhead Launch Controller — a custom nuke launch system for SCP: Secret Laboratory (EXILED plugin). Built by DNT_OF.</Description>
+    <PackageTags>scpsl;exiled;plugin;warhead;nuke</PackageTags>
+    <RepositoryUrl>https://github.com/DNTOF/OmegaWarhead</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Version>1.0.1</Version>
+    <!-- TRP = Translation Patch build marker -->
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
+    <InformationalVersion>1.0.1-fix4</InformationalVersion>
+  </PropertyGroup>
+
+  <!-- EXILED NuGet -->
+  <ItemGroup>
+    <PackageReference Include="ExMod.Exiled" Version="9.14.2" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!--
+    Game dependency DLLs are referenced from the local SCP:SL server installation.
+    These assemblies (Assembly-CSharp*, UnityEngine*, Mirror) are the property of
+    Northwood Studios and MUST NOT be redistributed — do not commit them to git.
+    Adjust these absolute paths to your own server installation before building.
+  -->
+  <ItemGroup>
+    <Reference Include="Exiled.CustomItems">
+      <HintPath>C:\Users\AllowCache\AppData\Roaming\EXILED\Plugins\Exiled.CustomItems.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>D:\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>D:\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>D:\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>D:\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Mirror">
+      <HintPath>D:\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Mirror.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HintServiceMeow" Version="*" />
+  </ItemGroup>
+
+</Project>

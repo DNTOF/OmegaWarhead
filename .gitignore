@@ -1,0 +1,30 @@
+# Build artifacts
+bin/
+obj/
+*.user
+*.suo
+*.cache
+
+# IDE / Editor
+.vs/
+.vscode/
+.idea/
+*.swp
+*.sln.DotSettings.user
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ZCode plan folder — do not upload
+.zcode/
+
+# Strong name key — private, do NOT commit
+OmegaWarhead.snk
+*.snk
+
+# Game dependency DLLs (Assembly-CSharp*, UnityEngine*, Mirror, etc.) are the
+# property of Northwood Studios and MUST NOT be redistributed. Do NOT commit.
+lib/
+*.dll
+*.pdb
