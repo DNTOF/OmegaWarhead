@@ -2,8 +2,6 @@
 
 > **OMEGA Warhead Launch Controller** — A custom nuke launch system for SCP: Secret Laboratory (EXILED plugin).
 
-[![Build](https://github.com/DNTOF/OmegaWarhead/actions/workflows/build.yml/badge.svg)](https://github.com/DNTOF/OmegaWarhead/actions/workflows/build.yml)
-
 > 🌐 **[中文文档](README_ZH.md)**
 
 ---
